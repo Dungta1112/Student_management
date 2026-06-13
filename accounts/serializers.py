@@ -3,17 +3,48 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = [
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'role',
+            'is_active',
+            'date_joined',
+            'password',
+        ]
+        read_only_fields = ['date_joined']
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+        }
+
+    def validate(self, attrs):
+        if self.instance is None and not attrs.get('password'):
+            raise serializers.ValidationError(
+                {'password': 'Mật khẩu là bắt buộc khi tạo tài khoản.'}
+            )
+        return attrs
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            role=validated_data.get('role', 'student'),
-            password=validated_data['password']
-        )
+        password = validated_data.pop('password', None)
+        user = User(**validated_data)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save()
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
