@@ -22,10 +22,11 @@ class CurrentUserView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
     def perform_update(self, serializer):
-        protected_fields = {'role', 'is_active', 'username'}
+        protected_fields = {'role', 'is_active', 'username', 'student_code'}
         if protected_fields.intersection(self.request.data):
             raise PermissionDenied(
-                'Bạn không thể tự thay đổi tên đăng nhập, vai trò hoặc trạng thái.'
+                'Bạn không thể tự thay đổi tên đăng nhập, mã sinh viên, '
+                'vai trò hoặc trạng thái.'
             )
         serializer.save()
 
@@ -45,5 +46,3 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         if instance.pk == self.request.user.pk:
             raise PermissionDenied('Bạn không thể xóa tài khoản đang đăng nhập.')
         instance.delete()
-
-# Create your views here.

@@ -8,7 +8,11 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     first_name: user.first_name || '',
     last_name: user.last_name || '',
+    full_name: user.full_name || '',
     email: user.email || '',
+    date_of_birth: user.date_of_birth || '',
+    phone_number: user.phone_number || '',
+    enrollment_date: user.enrollment_date || '',
     password: '',
   });
   const [message, setMessage] = useState('');
@@ -20,7 +24,11 @@ export default function ProfilePage() {
     setMessage('');
     setError('');
     setSaving(true);
-    const payload = { ...form };
+    const payload = {
+      ...form,
+      date_of_birth: form.date_of_birth || null,
+      enrollment_date: form.enrollment_date || null,
+    };
     if (!payload.password) delete payload.password;
 
     try {
@@ -67,6 +75,40 @@ export default function ProfilePage() {
             value={form.last_name}
             onChange={(event) => setForm({ ...form, last_name: event.target.value })}
           />
+        </label>
+        <label className="field-wide">
+          Họ và tên hiển thị
+          <input
+            value={form.full_name}
+            onChange={(event) => setForm({ ...form, full_name: event.target.value })}
+          />
+        </label>
+        <label>
+          Ngày sinh
+          <input
+            type="date"
+            value={form.date_of_birth}
+            onChange={(event) => setForm({ ...form, date_of_birth: event.target.value })}
+          />
+        </label>
+        <label>
+          Số điện thoại
+          <input
+            value={form.phone_number}
+            onChange={(event) => setForm({ ...form, phone_number: event.target.value })}
+          />
+        </label>
+        <label>
+          Ngày nhập học
+          <input
+            type="date"
+            value={form.enrollment_date}
+            onChange={(event) => setForm({ ...form, enrollment_date: event.target.value })}
+          />
+        </label>
+        <label>
+          Mã sinh viên
+          <input value={user.student_code || ''} disabled />
         </label>
         <label className="field-wide">
           Email

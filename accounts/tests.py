@@ -34,13 +34,18 @@ class AccountApiTests(APITestCase):
 
         response = self.client.patch(
             '/api/me/',
-            {'first_name': 'An', 'email': 'an@example.com'},
+            {
+                'first_name': 'An',
+                'full_name': 'Nguyễn Văn An',
+                'email': 'an@example.com',
+            },
             format='json',
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.student.refresh_from_db()
         self.assertEqual(self.student.first_name, 'An')
+        self.assertEqual(self.student.full_name, 'Nguyễn Văn An')
         self.assertEqual(self.student.email, 'an@example.com')
 
     def test_student_cannot_list_users(self):
@@ -60,6 +65,8 @@ class AccountApiTests(APITestCase):
                 'password': 'TeacherPass123!',
                 'role': 'teacher',
                 'email': 'teacher@example.com',
+                'student_code': '',
+                'date_of_birth': None,
             },
             format='json',
         )

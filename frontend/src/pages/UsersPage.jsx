@@ -8,8 +8,13 @@ const emptyForm = {
   username: '',
   first_name: '',
   last_name: '',
+  full_name: '',
   email: '',
   role: 'student',
+  student_code: '',
+  date_of_birth: '',
+  phone_number: '',
+  enrollment_date: '',
   is_active: true,
   password: '',
 };
@@ -42,7 +47,15 @@ export default function UsersPage() {
     const keyword = search.trim().toLowerCase();
     if (!keyword) return users;
     return users.filter((item) =>
-      [item.username, item.first_name, item.last_name, item.email, item.role]
+      [
+        item.username,
+        item.first_name,
+        item.last_name,
+        item.full_name,
+        item.student_code,
+        item.email,
+        item.role,
+      ]
         .join(' ')
         .toLowerCase()
         .includes(keyword),
@@ -68,7 +81,12 @@ export default function UsersPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-    const payload = { ...form };
+    const payload = {
+      ...form,
+      student_code: form.student_code || null,
+      date_of_birth: form.date_of_birth || null,
+      enrollment_date: form.enrollment_date || null,
+    };
     if (!payload.password) delete payload.password;
 
     try {
@@ -138,7 +156,11 @@ export default function UsersPage() {
             {filteredUsers.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <strong>{[item.first_name, item.last_name].filter(Boolean).join(' ') || item.username}</strong>
+                  <strong>
+                    {item.full_name ||
+                      [item.first_name, item.last_name].filter(Boolean).join(' ') ||
+                      item.username}
+                  </strong>
                   <small>{item.email || `@${item.username}`}</small>
                 </td>
                 <td><span className={`role role-${item.role}`}>{roleLabels[item.role]}</span></td>
@@ -192,6 +214,43 @@ export default function UsersPage() {
               <label>
                 Tên
                 <input value={form.last_name} onChange={(event) => setForm({ ...form, last_name: event.target.value })} />
+              </label>
+              <label className="field-wide">
+                Họ và tên hiển thị
+                <input
+                  value={form.full_name || ''}
+                  onChange={(event) => setForm({ ...form, full_name: event.target.value })}
+                />
+              </label>
+              <label>
+                Mã sinh viên
+                <input
+                  value={form.student_code || ''}
+                  onChange={(event) => setForm({ ...form, student_code: event.target.value })}
+                />
+              </label>
+              <label>
+                Số điện thoại
+                <input
+                  value={form.phone_number || ''}
+                  onChange={(event) => setForm({ ...form, phone_number: event.target.value })}
+                />
+              </label>
+              <label>
+                Ngày sinh
+                <input
+                  type="date"
+                  value={form.date_of_birth || ''}
+                  onChange={(event) => setForm({ ...form, date_of_birth: event.target.value })}
+                />
+              </label>
+              <label>
+                Ngày nhập học
+                <input
+                  type="date"
+                  value={form.enrollment_date || ''}
+                  onChange={(event) => setForm({ ...form, enrollment_date: event.target.value })}
+                />
               </label>
               <label className="field-wide">
                 Email
